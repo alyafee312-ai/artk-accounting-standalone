@@ -5,6 +5,7 @@ beforeAll(()=>{Object.defineProperty(globalThis,'crypto',{value:webcrypto,config
 import {describe,it,expect} from 'vitest';
 import {storeEncryptedDraft} from './encryptedDraftStore';
 import {loadEncryptedDraft} from './loadEncryptedDraft';
+import {deleteEncryptedDraft} from './deleteEncryptedDraft';
 describe('offline encrypted draft persistence',()=>{
  it('saves and restores a test invoice and rejects an incorrect passphrase',async()=>{
   const record={id:'offline-test-invoice-1',type:'invoice' as const,amount:12500,createdAt:'2026-10-17T00:00:00.000Z'};
@@ -13,5 +14,7 @@ describe('offline encrypted draft persistence',()=>{
   await expect(loadEncryptedDraft(record.id,password)).resolves.toEqual(record);
   await expect(loadEncryptedDraft(record.id,'wrong-test-passphrase-123')).rejects.toThrow();
   await expect(loadEncryptedDraft('missing-id',password)).resolves.toBeNull();
+  await deleteEncryptedDraft(record.id);
+  await expect(loadEncryptedDraft(record.id,password)).resolves.toBeNull();
  });
 });
