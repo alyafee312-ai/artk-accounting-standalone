@@ -1,0 +1,6 @@
+.view h2{font-size:20px;margin-top:26px}
+.quick{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 26px}
+.quick button{flex:1 1 160px;max-width:300px}
+.sectionHead{display:flex;justify-content:space-between;align-items:center}
+.hint{color:#687075;font-size:13px;line-height:1.9}
+@media(max-width:500px){.quick{display:grid;grid-template-columns:1fr 1fr}.quick button{font-size:12px;padding:10px;width:100%;height:auto;min-height:44px}}
