@@ -1,16 +1,14 @@
 name: Standalone Accounting Android Preview
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'package.json'
-      - 'tsconfig.json'
-      - 'vitest.config.ts'
-      - 'capacitor.config.ts'
-      - 'index.html'
-      - '.github/workflows/android-preview.yml'
+    paths: ['src/**', 'floot-source/**', 'package*.json', 'tsconfig.json', 'vitest.config.ts', 'capacitor.config.ts', 'index.html', '.github/workflows/android-preview.yml']
+concurrency:
+  group: artk-preview-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -21,26 +19,68 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-      - name: Verify Android SDK
-        run: |
-          test -n "${ANDROID_HOME:-}"
-          test -d "$ANDROID_HOME"
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Run accounting encryption diagnostics
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Test offline accounting and encrypted backups
         run: npm test
-      - name: Build web preview
+      - name: Build original interface
         run: npm run build
-      - name: Initialize Android
-        run: npx cap add android
+      - name: Initialize and sync Android plugins
+        run: |
+          npx cap add android
+          npx cap sync android
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/src/main/AndroidManifest.xml')
+          import re
+          s=re.sub(r'android:allowBackup="[^"]*"','android:allowBackup="false"',p.read_text())
+          p.write_text(s)
+          PY
       - name: Build Android debug APK
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - name: Check APK metadata and checksum
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest application-id android/app/build/outputs/apk/debug/app-debug.apk
+          sha256sum android/app/build/outputs/apk/debug/app-debug.apk > android/app/build/outputs/apk/debug/app-debug.apk.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: artk-accounting-source-preview-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: artk-accounting-offline-debug
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/debug/app-debug.apk.sha256
           if-no-files-found: error
+      - name: Build isolated native QA variant
+        env:
+          VITE_NATIVE_QA: 'true'
+        run: |
+          npm run build
+          npx cap sync android
+          cd android && ./gradlew assembleDebug --no-daemon
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Native offline SQLCipher accounting, reopen, restore and Arabic PDF
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: node scripts/native-qa.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-qa-evidence
+          path: qa-output/
+          if-no-files-found: warn

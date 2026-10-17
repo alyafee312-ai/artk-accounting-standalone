@@ -1,0 +1,65 @@
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-6);
+  color: var(--foreground);
+  display: grid;
+  gap: var(--spacing-6);
+  font-family: var(--font-family-base);
+}
+.heading, .actions, .dialogActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+.heading h2, .heading p, .roles p, .user h3, .notice p { margin: 0; }
+.heading h2 { font-size: 1.5rem; font-weight: 700; }
+.heading p, .subtle, .empty { color: var(--muted-foreground); }
+.roles {
+  background: color-mix(in srgb, var(--primary) 9%, var(--card));
+  border-radius: var(--radius);
+  padding: var(--spacing-4);
+  display: grid;
+  gap: var(--spacing-2);
+  line-height: 1.8;
+}
+.list { display: grid; gap: var(--spacing-3); }
+.skeleton { height: 7rem; }
+.user {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--spacing-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+}
+.userInfo { display: grid; gap: var(--spacing-1); min-width: 0; }
+.user h3 { font-size: 1.125rem; font-weight: 700; }
+.email { text-align: start; overflow-wrap: anywhere; color: var(--muted-foreground); }
+.meta { display: flex; gap: var(--spacing-3); flex-wrap: wrap; font-size: 0.875rem; }
+.active { color: var(--success); font-weight: 700; }
+.disabled { color: var(--error); font-weight: 700; }
+.actions { justify-content: flex-start; }
+.notice {
+  background: var(--surface);
+  padding: var(--spacing-4);
+  border-radius: var(--radius);
+  display: grid;
+  justify-items: start;
+  gap: var(--spacing-3);
+}
+.form { display: grid; gap: var(--spacing-4); }
+.form label { display: grid; gap: var(--spacing-2); font-weight: 600; }
+.form > button { justify-self: start; min-height: 2.75rem; }
+.error { color: var(--error); margin: 0; }
+@media (max-width: 640px) {
+  .panel { padding: var(--spacing-4); }
+  .heading, .user { align-items: stretch; flex-direction: column; }
+  .actions { width: 100%; }
+  .actions button { flex: 1; min-height: 2.75rem; }
+}
