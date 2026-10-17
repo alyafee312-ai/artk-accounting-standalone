@@ -1,4 +1,7 @@
 import 'fake-indexeddb/auto';
+import {webcrypto} from 'node:crypto';
+import {beforeAll} from 'vitest';
+beforeAll(()=>{Object.defineProperty(globalThis,'crypto',{value:webcrypto,configurable:true});});
 import {describe,it,expect} from 'vitest';
 import {storeEncryptedDraft} from './encryptedDraftStore';
 import {loadEncryptedDraft} from './loadEncryptedDraft';
