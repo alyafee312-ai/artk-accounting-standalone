@@ -4,8 +4,11 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, 'feature/offline-original-ui-*']
+    branches: [main]
     paths: ['src/**', 'floot-source/**', 'package*.json', 'tsconfig.json', 'vitest.config.ts', 'capacitor.config.ts', 'index.html', '.github/workflows/android-preview.yml']
+concurrency:
+  group: artk-preview-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

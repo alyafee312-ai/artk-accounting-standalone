@@ -6,6 +6,7 @@ import {nativeBackend,deleteTestDatabase} from './local/native';
 import {database,migrate} from './local/database';
 import {Ledger,initializeAdmin,authenticate} from './local/service';
 import {sealBackup,openBackup,snapshot,restoreIntoEmpty} from './local/backup';
+import {AccountingWorkspace} from '../floot-source/components/AccountingWorkspace';
 import {AccountingPrint} from '../floot-source/components/AccountingPrint';
 import {accountingDocument} from '../floot-source/helpers/accountingDocument';
 import {accountingPdf} from '../floot-source/helpers/accountingPdf';
@@ -25,6 +26,7 @@ export async function runNativeQa(){
  const employee=new Ledger(db,{id:1,role:'user'});verify((await employee.read()).costs.length===0,'native employee cost redaction');
  const mount=document.createElement('div');document.body.appendChild(mount);const root=createRoot(mount);flushSync(()=>root.render(<AccountingPrint doc={accountingDocument('invoice',d.invoices[0],d,{})} onClose={()=>{}}/>));await new Promise(r=>setTimeout(r,400));
  let pdf64='';try{const print=document.querySelector('[data-print-sheet]')?.parentElement;if(!print)throw Error('print sheet missing');const blob=await accountingPdf(print,'qa',false);verify(blob.size>3000,'Arabic invoice PDF rendered');pdf64=await new Promise<string>((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(blob)})}finally{root.unmount();mount.remove()}
+ const dashboard=document.createElement('div');document.body.appendChild(dashboard);document.getElementById('root')!.style.display='none';flushSync(()=>createRoot(dashboard).render(<AccountingWorkspace data={d} preview refresh={async()=>{}} onLogout={async()=>{}} userName="بيانات اختبار معزولة"/>));
  return {passed,pdf64};
  }finally{if(restored)await restored.destroy();if(db)await db.destroy();await deleteTestDatabase(name);await deleteTestDatabase(restoreName)}
 }

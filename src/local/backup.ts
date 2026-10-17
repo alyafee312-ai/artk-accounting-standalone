@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import type {Kysely} from 'kysely';
 import {sql} from 'kysely';
 const encoder=new TextEncoder();
@@ -20,6 +21,11 @@ export async function restoreIntoEmpty(db:Kysely<any>,value:unknown){
   for(const table of names){const columns=(await sql.raw(`PRAGMA table_xinfo("${table}")`).execute(tx)).rows as {name:string;hidden:number}[];const allowed=new Set(columns.filter(c=>!c.hidden).map(c=>c.name));
    for(const raw of v.tables[table]){if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('سجل غير صالح');const row=Object.fromEntries(Object.entries(raw).filter(([k])=>allowed.has(k)));if(!Object.keys(row).length)throw Error('سجل فارغ');await tx.insertInto(table).values(row).execute();}
   }
+  const allReceipts=await tx.selectFrom('accountingReceipts').selectAll().execute();
+  const invoices=await tx.selectFrom('accountingInvoices').selectAll().execute();
+  for(const invoice of invoices){const paid=allReceipts.filter(r=>String(r.invoiceId)===String(invoice.id)&&!r.voidedAt).reduce((n,r)=>n.plus(r.amount),new Decimal(0));if(paid.gt(invoice.amount)||!Number.isFinite(Number(invoice.amount))||Number(invoice.amount)<0)throw Error('أرصدة النسخة غير سليمة');for(const receipt of allReceipts.filter(r=>String(r.invoiceId)===String(invoice.id))){if(String(receipt.customerId)!==String(invoice.customerId)||!Number.isFinite(Number(receipt.amount))||Number(receipt.amount)<=0)throw Error('تحصيل غير سليم')}}
+  for(const user of await tx.selectFrom('users').selectAll().execute()){if(!['admin','accountant','user'].includes(user.role))throw Error('صلاحية مستخدم غير صالحة')}
+  if(!(await tx.selectFrom('users').select('id').where('role','=','admin').where('disabledAt','is',null).execute()).length)throw Error('لا يوجد مدير نشط في النسخة');
   const violations=await sql`PRAGMA foreign_key_check`.execute(tx);if(violations.rows.length)throw Error('علاقات النسخة غير سليمة');
  });
  const integrity=await sql`PRAGMA integrity_check`.execute(db);if((integrity.rows[0] as any)?.integrity_check!=='ok')throw Error('فشل فحص سلامة النسخة');
