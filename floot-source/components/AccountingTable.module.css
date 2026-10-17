@@ -1,0 +1,8 @@
+.tableWrap{overflow-x:auto;background:white;border:1px solid #e3e0d8;border-radius:12px}
+.tableWrap table{width:100%;border-collapse:collapse;text-align:right;white-space:nowrap;font-size:13px}
+.tableWrap th{padding:16px;background:#eeede7;color:#686e70;font-size:12px;font-weight:600}
+.tableWrap td{padding:16px;border-bottom:1px solid #eeede8;max-width:320px;white-space:normal;line-height:1.7}
+.tableWrap td small{display:block;color:#747b7e;font-size:11px;margin-top:5px;max-width:260px}
+.tableWrap td button{margin:3px}
+.empty{padding:35px;text-align:center;color:#767e82;grid-column:1/-1}
+@media(max-width:500px){.tableWrap table{min-width:650px}}
