@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+:root {
+  /* Overlay layers */
+  --z-overlay: 400;
+  --z-spotlight: 1000; /* Tutorial spotlights/guided help */
+  /* System layers */
+  --z-critical: 2000; /* Critical system notifications */
+  /* spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+}
+:root {
+--background:#f4f3f0;--foreground:#1d2429;--surface:#ebeae5;--surface-foreground:#1d2429;--sidebar:#20272b;--sidebar-foreground:#f7f5ed;--card:#fffefa;--card-foreground:#1d2429;--popup:#fffefa;--popup-foreground:#1d2429;--primary:#e7a916;--primary-foreground:#1d2429;--secondary:#e8e6de;--secondary-foreground:#30363a;--accent:#e7a916;--accent-foreground:#1d2429;--muted:#e8e6de;--muted-foreground:#6b7276;--success:#217a57;--success-foreground:#ffffff;--error:#ba3b36;--error-foreground:#fff;--warning:#b67a11;--warning-foreground:#fff;--info:#256f92;--info-foreground:#fff;--info-hover:#195d7b;--info-active:#154e69;--border:#dcd9cf;--font-family-base:'Cairo',sans-serif;--font-family-display:'Cairo',sans-serif;--font-family-monospace:monospace;--font-family-cursive:cursive;--shadow:0 3px 14px #1d24290c;--shadow-md:0 8px 28px #1d242914;--shadow-lg:0 16px 42px #1d242921;--shadow-focus:0 0 0 3px #e7a91655;--radius-sm:7px;--radius:12px;--radius-md:16px;--radius-lg:22px;--radius-full:999px;--animation-duration-fast:120ms;--animation-duration-normal:200ms;--animation-duration-slow:350ms;--chart-color-1:#e7a916;--chart-color-2:#49585d;--chart-color-3:#84918d;--chart-color-4:#a6a08c;--chart-color-5:#c9ba96;
+}
+.dark {}
