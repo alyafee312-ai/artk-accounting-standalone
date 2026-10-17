@@ -7,5 +7,6 @@ describe('encrypted draft backup format',()=>{
   expect(()=>parseEncryptedDraftBackup(JSON.stringify({id:'draft-1',amount:12500}))).toThrow();
   expect(()=>parseEncryptedDraftBackup(JSON.stringify({...sample,encrypted:{...sample.encrypted,iv:[1]}}))).toThrow();
   expect(()=>parseEncryptedDraftBackup(JSON.stringify({...sample,version:2}))).toThrow();
+  expect(()=>parseEncryptedDraftBackup(JSON.stringify({...sample,encrypted:{...sample.encrypted,ciphertext:Array(1024*1024+1).fill(0)}}))).toThrow();
  });
 });
