@@ -9,9 +9,7 @@ export class Ledger {
  constructor(readonly db:Kysely<any>,readonly user={id:1,role:'admin'}){}
  serial<T>(fn:()=>Promise<T>):Promise<T>{const result=this.queue.then(fn);this.queue=result.catch(()=>{});return result;}
  write(input:unknown){return this.serial(()=>this.db.transaction().execute(tx=>accountingWrite(tx,this.user,input)));}
- read(){return this.serial(async()=>{const data=await accountingRead(this.db,this.user.role);if(!data.permissions.canViewCosts){
-  data.invoices=data.invoices.map(({amount,items,...r})=>r);data.receipts=data.receipts.map(({amount,...r})=>r);data.quotes=data.quotes.map(({amount,items,...r})=>r);
- }return data as AccountingData;});}
+ read(){return this.serial(async()=>{const data=await accountingRead(this.db,this.user.role);return data as AccountingData;});}
  users(){return this.serial(async()=>{accountingAccess.assertAdmin(this.user.role);return this.db.selectFrom('users').select(['id','displayName','email','role','disabledAt']).execute()})}
  userAction(input:{id?:number;displayName:string;email:string;role:string;password?:string;disabled?:boolean}){return this.serial(async()=>{accountingAccess.assertAdmin(this.user.role);if(!['admin','accountant','user'].includes(input.role)||input.displayName.trim().length<2||!input.email.trim())throw Error('بيانات المستخدم غير صالحة');
  const values:Record<string,unknown>={displayName:input.displayName.trim(),email:input.email.trim().toLowerCase(),role:input.role,disabledAt:input.disabled?new Date():null};

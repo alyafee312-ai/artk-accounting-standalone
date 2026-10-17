@@ -8,7 +8,7 @@ The Kysely SQLite compiler drives a Capacitor SQLite backend on Android. The pro
 
 Device unlock uses a 6–12 digit PIN, PBKDF2-HMAC-SHA256 (310,000 iterations), random salt, and persisted throttling. System biometric verification is optional. After device unlock, a local account password is required. Local account passwords are salted PBKDF2 hashes within the encrypted database. The first account uses login `admin` with a password chosen at first launch; no default password is embedded.
 
-Financial writes, idempotency results and audit records commit together. The read service removes employee costs, stock, suppliers, audit data and sensitive document values. Admin-only user operations forbid self-demotion/disablement and removal of the last active administrator.
+Financial writes, idempotency results and audit records commit together. The read service removes employee costs, stock, suppliers, audit data. Admin-only user operations forbid self-demotion/disablement and removal of the last active administrator.
 
 Backups use password-derived AES-256-GCM, PBKDF2-HMAC-SHA256 at 310,000 iterations, a random salt and nonce, and authenticated format identification. Restore first writes only to a freshly migrated empty database and checks foreign keys and integrity. The app can verify this in a disposable database. When explicitly requested in the app, a verified restore is placed in another encrypted database and activated only after successful checks; the previous database is retained.
 
