@@ -1,0 +1,42 @@
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-6);
+  display: grid;
+  gap: var(--spacing-4);
+  color: var(--foreground);
+  font-family: var(--font-family-base);
+}
+.heading h2, .heading p, .empty, .count { margin: 0; }
+.heading h2 { font-size: 1.5rem; font-weight: 700; }
+.heading p, .empty, .count { color: var(--muted-foreground); }
+.search { display: grid; gap: var(--spacing-2); max-width: 28rem; font-weight: 600; }
+.searchControl { display: flex; align-items: center; gap: var(--spacing-2); }
+.searchControl svg { flex: none; color: var(--muted-foreground); }
+.tableScroll { overflow-x: auto; }
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 42rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.table th, .table td {
+  padding: var(--spacing-3);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.table th {
+  background: var(--surface);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.table td { font-size: 0.875rem; }
+.details { min-width: 12rem; overflow-wrap: anywhere; }
+.more { justify-self: start; min-height: 2.75rem; }
+@media (max-width: 640px) {
+  .panel { padding: var(--spacing-4); }
+  .more { width: 100%; }
+}
