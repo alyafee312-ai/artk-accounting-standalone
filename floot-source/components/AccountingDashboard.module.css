@@ -1,0 +1,20 @@
+.dashboard h2{font-size:20px;margin-top:26px}
+.welcome{display:flex;justify-content:space-between;gap:20px;align-items:center;background:#fff;border:1px solid #e4e1d7;border-radius:16px;padding:28px;margin-bottom:20px}
+.welcome span{color:#75612c;font-size:13px}
+.welcome h2{font-size:25px;margin:10px 0}
+.welcome p{color:#6d7476;margin:0;font-size:14px}
+.date{white-space:nowrap}
+.quick{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 26px}
+.quick button{flex:1 1 160px;max-width:300px}
+.sectionHead{display:flex;justify-content:space-between;align-items:center}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.cards article{border:1px solid #e2dfd6;border-radius:14px;background:#fff;padding:22px;display:grid;gap:12px;align-content:start}
+.cards h3{margin:0;font-size:19px}
+.cards p{margin:0;color:#6a7276;font-size:13px;line-height:1.9}
+.cards strong{font-size:17px}
+.badge{width:fit-content;padding:5px 10px;background:#f7f0db;border-radius:6px;font-size:11px;color:#765c1b}
+.empty{padding:35px;text-align:center;color:#767e82;grid-column:1/-1}
+.lowAlert{margin-top:22px;color:#a34f2e}
+@media(max-width:1200px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.welcome{padding:22px;display:block}.date{display:block;margin-top:16px}}
+@media(max-width:500px){.cards{grid-template-columns:1fr}.welcome h2{font-size:22px}.quick{display:grid;grid-template-columns:1fr 1fr}.quick button{font-size:12px;padding:10px;width:100%;height:auto;min-height:44px}}
