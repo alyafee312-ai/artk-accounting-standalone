@@ -30,6 +30,8 @@ jobs:
           test -d "$ANDROID_HOME"
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Run accounting encryption diagnostics
+        run: npm test
       - name: Build web preview
         run: npm run build
       - name: Initialize Android
