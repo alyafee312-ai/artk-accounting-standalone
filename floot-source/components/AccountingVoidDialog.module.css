@@ -1,0 +1,27 @@
+.content { font-family: var(--font-family-base); }
+.warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  margin: 0 0 var(--spacing-4);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--warning) 12%, var(--card));
+  line-height: 1.8;
+}
+.warning svg { flex: none; color: var(--warning); margin-top: var(--spacing-1); }
+.form { display: grid; gap: var(--spacing-2); }
+.form label { font-weight: 600; }
+.error { color: var(--error); margin: var(--spacing-2) 0; }
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-4);
+}
+.actions button { min-height: 2.75rem; }
+@media (max-width: 480px) {
+  .actions { flex-direction: column-reverse; }
+  .actions button { width: 100%; }
+}
