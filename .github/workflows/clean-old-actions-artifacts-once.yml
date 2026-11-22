@@ -1,0 +1,66 @@
+name: One-time approved standalone accounting old APK cleanup
+on:
+  push:
+    branches: [maintenance/keep-latest-actions-apks-20261122]
+    paths: [.github/workflows/clean-old-actions-artifacts-once.yml]
+permissions:
+  contents: read
+  actions: write
+jobs:
+  retain-latest-clean-obsolete:
+    if: github.repository == 'alyafee312-ai/artk-accounting-standalone'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Validate exact old APK and QA artifacts before deletion
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.error
+          base='https://api.github.com/repos/alyafee312-ai/artk-accounting-standalone/'
+          keep=[
+            (12086147763,38994472478,'artk-accounting-offline-debug'),
+            (12086491787,38994472478,'native-qa-evidence'),
+          ]
+          old=[[12085689292,38992995613,"native-qa-evidence"],[12085554527,38992995613,"artk-accounting-offline-debug"],[12085449498,38992557389,"native-qa-evidence"],[12085108721,38992557389,"artk-accounting-offline-debug"],[12085073702,38992160253,"native-qa-evidence"],[12085008584,38992160253,"artk-accounting-offline-debug"],[12085980946,38992157231,"artk-accounting-offline-debug"],[12085168221,38992157231,"native-qa-evidence"],[12084728264,38991026704,"artk-accounting-source-preview-debug"],[12085500997,38991015517,"artk-accounting-source-preview-debug"],[12083754451,38989552692,"artk-accounting-source-preview-debug"],[12084880599,38989439545,"artk-accounting-source-preview-debug"],[12084505332,38988465873,"artk-accounting-source-preview-debug"],[12084395552,38988443500,"artk-accounting-source-preview-debug"],[12084176266,38988300521,"artk-accounting-source-preview-debug"],[12084300864,38988285095,"artk-accounting-source-preview-debug"],[12083678252,38988247896,"artk-accounting-source-preview-debug"],[12082864990,38988239225,"artk-accounting-source-preview-debug"],[12083933300,38988169844,"artk-accounting-source-preview-debug"],[12084041832,38988131902,"artk-accounting-source-preview-debug"],[12083672601,38987883345,"artk-accounting-source-preview-debug"],[12083763350,38987875522,"artk-accounting-source-preview-debug"],[12083014451,38986902789,"artk-accounting-source-preview-debug"],[12082899256,38986589424,"artk-accounting-source-preview-debug"],[12082754890,38986582814,"artk-accounting-source-preview-debug"],[12083282761,38986537983,"artk-accounting-source-preview-debug"],[12083421505,38986211660,"artk-accounting-source-preview-debug"]]
+          assert len(old)==27 and len({x[0] for x in old})==27
+          assert not ({x[0] for x in old}&{x[0] for x in keep})
+          def api(route,method='GET'):
+              req=urllib.request.Request(base+route,method=method,headers={'Accept':'application/vnd.github+json','Authorization':'Bearer '+os.environ['GH_TOKEN'],'X-GitHub-Api-Version':'2022-11-28'})
+              with urllib.request.urlopen(req,timeout=30) as resp:
+                  payload=resp.read()
+                  return resp.status,json.loads(payload) if payload else None
+          verified_runs={}
+          def check(item):
+              aid,rid,name=item
+              status,a=api('actions/artifacts/'+str(aid))
+              assert status==200 and a['id']==aid
+              assert a['name']==name,(aid,a['name'])
+              assert a['workflow_run']['id']==rid,(aid,a.get('workflow_run'))
+              assert a['created_at'].startswith('2026-10-17T'),(aid,a['created_at'])
+              assert not a['expired'],aid
+              low,high=(10000000,13000000) if name=='artk-accounting-offline-debug' else (180000,270000) if name=='native-qa-evidence' else (3500000,4500000)
+              if name=='native-qa-evidence': low=100000
+              assert low<=a['size_in_bytes']<=high,(aid,a['size_in_bytes'])
+              if rid not in verified_runs:
+                  _,r=api('actions/runs/'+str(rid))
+                  assert r['status']=='completed' and r['conclusion']=='success',(rid,r['conclusion'])
+                  verified_runs[rid]=True
+              return a['size_in_bytes']
+          for entry in keep: check(entry)
+          total=0
+          for entry in old: total+=check(entry)
+          print('All 27 old artifact IDs verified, preserving latest APK and QA (run 38994472478).')
+          print('Expected space reclaimed bytes:',total)
+          for aid,_,_ in old:
+              status,_=api('actions/artifacts/'+str(aid),'DELETE')
+              assert status==204,(aid,status)
+              print('Deleted approved obsolete artifact',aid)
+          for entry in keep: check(entry)
+          for aid,_,_ in old:
+              try: api('actions/artifacts/'+str(aid))
+              except urllib.error.HTTPError as e: assert e.code==404,(aid,e.code)
+              else: raise AssertionError('Artifact not deleted '+str(aid))
+          print('Done: 27 obsolete artifacts removed; latest APK and QA evidence intact.')
+          PY
